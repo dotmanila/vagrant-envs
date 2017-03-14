@@ -1,0 +1,116 @@
+---
+- hosts: all
+  tasks:
+  - include: tasks/repo-percona.yml
+  - include: tasks/repo-epel.yml
+  - include: tasks/repo-twindb.yml
+  - name: mariadb-libs
+    yum:
+      name: mariadb-libs
+      state: removed
+  - name: install Percona-Server-56
+    yum: 
+      name: Percona-Server-server-56,Percona-Server-client-56,Percona-Server-shared-56
+      update_cache: true
+      state: present
+  - name: install extras
+    yum:
+      name: percona-xtrabackup,libev,percona-toolkit,nc,nmap,git
+      state: present
+  - include: tasks/linux-ssh.yml
+
+  - name: create masterha directory
+    file:
+      path: /var/log/masterha/
+      owner: vagrant
+      group: vagrant
+      mode: 0755
+      state: directory
+
+  - name: create masterha env directory
+    file:
+      path: /var/log/masterha/mhaprod/
+      owner: vagrant
+      group: vagrant
+      mode: 0755
+      state: directory
+
+  - name: create masterha config directory
+    file:
+      path: /etc/masterha/
+      owner: vagrant
+      group: vagrant
+      mode: 0755
+      state: directory
+
+  - name: create MHA cnf file
+    template: 
+      src: mha_template.cnf 
+      dest: /etc/masterha/mhaprod.cnf 
+      owner: vagrant 
+      group: vagrant 
+      mode: 0644
+
+- hosts: mha
+  tasks:
+  - name: install mha manager packages
+    yum:
+      name: mha4mysql-manager
+      state: present
+
+- hosts: mhanodes 
+  tasks:
+  - name: install mha node packages
+    yum:
+      name: mha4mysql-node
+      state: present
+
+  - name: create my.cnf file
+    template:
+      src: my_template_mha.cnf
+      dest: /etc/my.cnf
+      owner: mysql
+      group: mysql
+      mode: 0644
+      force: yes
+
+  - name: Percona Server daemon
+    service:
+      enabled: yes
+      state: started
+      name: mysql
+
+  - name: chmod mysql datadir with g+w
+    file: 
+      path: /var/lib/mysql
+      state: directory
+      mode: 0775
+
+  - name: add vagrant to mysql group
+    user: 
+      name: vagrant
+      groups: mysql
+
+- hosts: master
+  tasks:
+  - include: tasks/mysql-accounts.yml
+  - include: tasks/mysql-accounts-mha.yml
+
+- hosts: mhaslaves
+  tasks:
+  - name: upload slave setup sql
+    template:
+      src: ./files/setup-slave.sql
+      dest: /home/vagrant/.ansible/setup-slave.sql
+      owner: vagrant
+      group: vagrant
+      mode: 0644
+
+  - name: configure replication on slaves
+    shell: >
+      mysql < /home/vagrant/.ansible/setup-slave.sql && 
+      touch /home/vagrant/.ansible/.state_repl_installed
+    args:
+      creates: /home/vagrant/.ansible/.state_repl_installed
+
+

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+ENV=$1
+CWD=$(pwd)
+
+if [ "$(vagrant status|grep 'running (virtualbox)'|wc -l|bc)" -gt "0" ]; then
+  echo "An environment is actively running, please check with vagrant status or destroy with vagrant destroy first"
+  exit 1
+fi
+
+if [ ! -f "Vagrantfile.$ENV" ]; then
+  echo "Vagrantfile.$ENV environment does not exist in the current directory!"
+  exit 1
+fi
+
+if [ -f Vagrantfile -a ! -h Vagrantfile ]; then
+  echo "Vagrantfile exists, and not a symlink, perhaps you want to save it?"
+  exit 1
+fi
+
+if [ -h "Vagrantfile" ]; then
+  unlink Vagrantfile
+fi
+
+ln -s Vagrantfile.$ENV Vagrantfile
+vagrant up
+
+exit 0
+

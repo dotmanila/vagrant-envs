@@ -1,0 +1,28 @@
+---
+- hosts: all 
+  tasks:
+  - name: percona-repo 
+    yum:
+      name: http://www.percona.com/downloads/percona-release/redhat/0.1-4/percona-release-0.1-4.noarch.rpm
+      state: present
+  - name: epel-repo
+    yum:
+      name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
+      state: present
+  - name: mariadb-libs
+    yum:
+      name: mariadb-libs
+      state: removed
+  - name: install Percona-Server-56
+    yum: 
+      name: Percona-Server-server-56,Percona-Server-client-56,Percona-Server-shared-56
+      update_cache: true
+      state: present
+  - name: install corosync pacemaker
+    yum: 
+      name: corosync,pacemaker
+  - name: install extras
+    yum:
+      name: percona-xtrabackup,socat,libev,percona-toolkit,nc,nmap,git
+      state: present
+

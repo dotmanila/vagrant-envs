@@ -1,0 +1,5 @@
+---
+- name: twindb-repo
+  yum:
+    name: https://twindb.com/twindb-release-latest.noarch.rpm
+    state: present

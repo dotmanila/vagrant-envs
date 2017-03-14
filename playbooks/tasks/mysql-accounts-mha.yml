@@ -1,0 +1,16 @@
+---
+- name: upload mha sql grants
+  template:
+    src: ../files/setup-grants-mha.sql
+    dest: /home/vagrant/.ansible/setup-grants-mha.sql
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: create mha mysql account
+  shell: > 
+    mysql -uroot < /home/vagrant/.ansible/setup-grants-mha.sql && 
+    touch /home/vagrant/.ansible/.state_grants_mha_installed
+  args:
+    creates: /home/vagrant/.ansible/.state_grants_mha_installed
+

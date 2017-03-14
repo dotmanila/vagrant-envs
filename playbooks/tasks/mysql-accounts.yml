@@ -1,0 +1,23 @@
+---
+- name: upload sql grants
+  template:
+    src: ../files/setup-grants.sql
+    dest: /home/vagrant/.ansible/setup-grants.sql
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: create percona mysql account
+  shell: > 
+    mysql -uroot < /home/vagrant/.ansible/setup-grants.sql && 
+    touch /home/vagrant/.ansible/.state_grants_installed
+  args:
+    creates: /home/vagrant/.ansible/.state_grants_installed
+
+- name: percona .my.cnf for vagrant user
+  template:
+    src: ../templates/dot_my_percona.cnf
+    dest: /home/vagrant/.my.cnf
+    owner: vagrant
+    group: vagrant
+    mode: 0644

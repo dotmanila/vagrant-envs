@@ -1,0 +1,17 @@
+[client]
+user = root
+password = 
+
+[mysqld]
+innodb_buffer_pool_size = 128M
+innodb_log_file_size = 256M
+log-error = /var/lib/mysql/mysqld.log
+log-bin = mysql-bin
+relay-log = relay-bin
+log_slave_updates
+server-id={{ ansible_eth1['ipv4']['address'] | replace('.','') }}
+{% if mysql_gtid_mode %}
+gtid_mode = on
+enforce_gtid_consistency = 1
+{% endif %}
+

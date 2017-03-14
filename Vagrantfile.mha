@@ -1,0 +1,37 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+NODE_NAMES = ["mha", "master", "slave", "backup"]
+START_IP = 0
+
+Vagrant.configure("2") do |config|
+  config.ssh.insert_key = false
+  config.vm.box = "centos/7"
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+    v.cpus = 2
+  end
+  
+  i = START_IP
+
+  NODE_NAMES.each do |nn|
+    ipaddr = "192.168.56.9" + i.to_s
+    i = i+1
+    config.vm.define nn do |box|
+      box.vm.hostname = nn
+      box.vm.network :private_network, ip: ipaddr, :netmask => "255.255.255.0"
+    end
+  end
+        
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbooks/mha.yml"
+    ansible.sudo = true
+    ansible.groups = {
+      "mhanodes" => ["master", "slave", "backup"],
+      "mhaslaves" => ["slave", "backup"]
+    }
+    ansible.extra_vars = {
+      mysql_gtid_mode: true
+    }
+  end
+end
+
