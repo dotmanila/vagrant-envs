@@ -1,0 +1,31 @@
+- name: mariadb-libs
+  yum:
+    name: mariadb-libs
+    state: removed
+- name: install Percona-Server{{ mysql_package }}
+  yum:
+    name: Percona-Server-server{{ mysql_package }},Percona-Server-client{{ mysql_package }},Percona-Server-shared{{ mysql_package }}
+    update_cache: true
+    state: present
+- name: install extras
+  yum:
+    name: percona-xtrabackup{{ xtrabackup_package }},libev,percona-toolkit,nc,nmap,git,qpress
+    state: present
+- name: create my.cnf file
+  template:
+    src: etc_my_template.cnf
+    dest: /etc/my.cnf
+    owner: mysql
+    group: mysql
+    mode: 0644
+- name: Percona Server daemon
+  service:
+    enabled: yes
+    state: started
+    name: mysql
+- name: root .my.cnf
+  template:
+    src: dot_my_root.cnf
+    dest: /root/.my.cnf
+    mode: 0600
+    force: no

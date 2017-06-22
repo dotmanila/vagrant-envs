@@ -14,3 +14,10 @@
   args:
     creates: /home/vagrant/.ansible/.state_grants_mha_installed
 
+- name: vagrant .my.cnf for mhauser
+  copy:
+    src: ../templates/dot_my_mha.cnf
+    dest: /home/vagrant/.my.cnf
+    owner: vagrant
+    group: vagrant
+    mode: 0644

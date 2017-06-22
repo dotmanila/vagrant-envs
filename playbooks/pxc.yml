@@ -3,6 +3,9 @@
   vars:
     mysql_package: '-57'
     xtrabackup_package: '-24'
+    # * for all hosts, or ansible_hostname 
+    # for specific hosts only
+    mysql_alter_57_password: 'pxc01'
   tasks:
   - set_fact:
       mysql_package: '-56'

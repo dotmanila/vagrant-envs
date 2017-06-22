@@ -12,3 +12,6 @@ UPDATE main.global_variables SET variable_value='proxysql'
   WHERE variable_name=='mysql-monitor_username';
 UPDATE main.global_variables SET variable_value='PERCona2017_'
   WHERE variable_name=='mysql-monitor_password';
+
+LOAD MYSQL VARIABLES TO RUNTIME;
+SAVE MYSQL VARIABLES TO DISK;

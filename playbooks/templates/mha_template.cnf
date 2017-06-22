@@ -5,23 +5,30 @@
 [server default]
 
 user=mhauser
-password=mhapass
+password=MHApass2017_
 repl_user=mharepl
-repl_password=mharepl
+repl_password=MHArepl2017_
 ssh_user=vagrant
 
 manager_workdir=/var/log/masterha/mhaprod
-manager_log=/var/log/masterha/mhaprod
+manager_log=/var/log/masterha/mhaprod/manager.log
 remote_workdir=/var/log/masterha/mhaprod
 master_binlog_dir=/var/lib/mysql
 
-[server1]
-hostname=192.168.56.91
+master_ip_failover_script=/usr/bin/master_ip_hard_failover_helper
+master_ip_online_change_script=/usr/bin/master_ip_online_failover_helper
+report_script=/usr/bin/master_failover_report
 
-[server2]
+# this is a dummy shutdown script that always return 0 on
+# stopssh and status commands for testing purposes
+#shutdown_script=/usr/bin/power_manager
+
+[server1]
 hostname=192.168.56.92
 
-[server3]
+[server2]
 hostname=192.168.56.93
-no_master=1
 
+[server3]
+hostname=192.168.56.94
+no_master=1

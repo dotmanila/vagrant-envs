@@ -1,23 +1,37 @@
 ---
 - hosts: all
+  vars:
+    mysql_package: '-57'
+    xtrabackup_package: '-24'
+    # * for all hosts, or ansible_hostname 
+    # for specific hosts only
+    mysql_alter_57_password: '*'
   tasks:
+  - set_fact:
+      mysql_package: '-56'
+      xtrabackup_package: ''
+    when: mysql_version == '5.6'
   - include: tasks/repo-percona.yml
   - include: tasks/repo-epel.yml
   - include: tasks/repo-twindb.yml
-  - name: mariadb-libs
-    yum:
-      name: mariadb-libs
-      state: removed
-  - name: install Percona-Server-56
-    yum: 
-      name: Percona-Server-server-56,Percona-Server-client-56,Percona-Server-shared-56
-      update_cache: true
-      state: present
-  - name: install extras
-    yum:
-      name: percona-xtrabackup,libev,percona-toolkit,nc,nmap,git
-      state: present
-  - include: tasks/linux-ssh.yml
+  - include: tasks/percona-server.yml
+  - include: tasks/mysql-password-57.yml
+    when: mysql_package == '-57'
+  - include: tasks/mysql-accounts-mha.yml
+
+  - copy:
+      src: ~/.vagrant.d/insecure_private_key
+      dest: /home/vagrant/.ssh/id_rsa
+      owner: vagrant
+      group: vagrant
+      mode: 0600
+  - name: update authorized_keys
+    shell: >
+      ssh-keygen -y -f id_rsa >> authorized_keys &&
+      touch /home/vagrant/.ansible/.state_authkeys_installed
+    args:
+      chdir: /home/vagrant/.ssh
+      creates: /home/vagrant/.ansible/.state_authkeys_installed
 
   - name: create masterha directory
     file:
@@ -55,8 +69,34 @@
   tasks:
   - name: install mha manager packages
     yum:
-      name: mha4mysql-manager
+      name: mha4mysql-manager,gcc,python-devel,openssl-devel,python-pip,perl-Net-Telnet
       state: present
+
+  - name: create mha-helper config directory
+    file:
+      path: /etc/mha-helper/
+      owner: vagrant
+      group: vagrant
+      mode: 0755
+      state: directory
+
+  - name: create mha-helper conf file
+    template:
+      src: mha_helper.conf
+      dest: /etc/mha-helper/mhaprod.conf
+      owner: vagrant
+      group: vagrant
+      mode: 0644
+
+  - pip:
+      name: git+https://github.com/ovaistariq/mha-helper.git
+      editable: false
+
+  - name: copy mha power_manager
+    copy:
+      src: files/power_manager
+      dest: /usr/bin/power_manager
+      mode: 0755
 
 - hosts: mhanodes 
   tasks:
@@ -64,21 +104,6 @@
     yum:
       name: mha4mysql-node
       state: present
-
-  - name: create my.cnf file
-    template:
-      src: my_template_mha.cnf
-      dest: /etc/my.cnf
-      owner: mysql
-      group: mysql
-      mode: 0644
-      force: yes
-
-  - name: Percona Server daemon
-    service:
-      enabled: yes
-      state: started
-      name: mysql
 
   - name: chmod mysql datadir with g+w
     file: 
@@ -91,16 +116,28 @@
       name: vagrant
       groups: mysql
 
+  # this is an ugly hack to prevent replication from breaking on the slaves
+  # because of password validation plugin being enabled on install on all nodes
+  # simpler instead of provisioning all slaves from master data :-)
+  - name: reset master to clean binary logs
+    shell: mysql -e 'reset master' && touch /home/vagrant/.ansible/.state_master_reset
+    args:
+      creates: /home/vagrant/.ansible/.state_master_reset
+
 - hosts: master
   tasks:
-  - include: tasks/mysql-accounts.yml
-  - include: tasks/mysql-accounts-mha.yml
+  - name: assign vip to master
+    shell: >
+      ip addr add 192.168.56.90/32 dev eth1 &&
+      touch /home/vagrant/.ansible/.state_vip_configured
+    args:
+      creates: /home/vagrant/.ansible/.state_vip_configured
 
 - hosts: mhaslaves
   tasks:
   - name: upload slave setup sql
     template:
-      src: ./files/setup-slave.sql
+      src: files/setup-slave.sql
       dest: /home/vagrant/.ansible/setup-slave.sql
       owner: vagrant
       group: vagrant
@@ -112,5 +149,3 @@
       touch /home/vagrant/.ansible/.state_repl_installed
     args:
       creates: /home/vagrant/.ansible/.state_repl_installed
-
-

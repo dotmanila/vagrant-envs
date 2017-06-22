@@ -1,6 +1,6 @@
 ---
 - name: upload sql grants
-  template:
+  copy:
     src: ../files/setup-grants.sql
     dest: /home/vagrant/.ansible/setup-grants.sql
     owner: vagrant
@@ -15,7 +15,7 @@
     creates: /home/vagrant/.ansible/.state_grants_installed
 
 - name: percona .my.cnf for vagrant user
-  template:
+  copy:
     src: ../templates/dot_my_percona.cnf
     dest: /home/vagrant/.my.cnf
     owner: vagrant
