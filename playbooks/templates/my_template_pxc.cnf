@@ -34,5 +34,5 @@ wsrep_cluster_address           = "gcomm://{{ mysql_cluster_nodes }}"
 {% endif %}
 wsrep_slave_threads		= 2
 wsrep_sst_method		= xtrabackup-v2
-wsrep_sst_auth			= percona:percona
+wsrep_sst_auth			= percona:PERCona2017_
 wsrep_node_address		= {{ ansible_eth1['ipv4']['address'] }}

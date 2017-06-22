@@ -1,35 +1,19 @@
 ---
 - hosts: pxcnodes
+  vars:
+    mysql_package: '-57'
+    xtrabackup_package: '-24'
   tasks:
+  - set_fact:
+      mysql_package: '-56'
+      xtrabackup_package: ''
+    when: mysql_version == '5.6'
   - include: tasks/repo-percona.yml
   - include: tasks/repo-epel.yml
   - include: tasks/linux-ssh.yml
   - include: tasks/linux-selinux.yml
-  - name: mariadb-libs
-    yum:
-      name: mariadb-libs
-      state: removed
-  - name: install Percona-XtraDB-Cluster-56
-    yum: 
-      name: Percona-XtraDB-Cluster-server-56,Percona-XtraDB-Cluster-client-56,Percona-XtraDB-Cluster-shared-56
-      update_cache: true
-      state: present
-  - name: install extras
-    yum:
-      name: percona-xtrabackup,libev,percona-toolkit,nc,nmap,git,qpress
-      state: present
-  - name: create my.cnf file
-    template:
-      src: my_template_pxc.cnf
-      dest: /etc/my.cnf
-      owner: mysql
-      group: mysql
-      mode: 0644
-      force: yes
-  - name: Percona Server daemon
-    service:
-      enabled: yes
-      state: started
-      name: mysql
+  - include: tasks/percona-cluster.yml
+  - include: tasks/mysql-password-57.yml
+    when: mysql_package == '-57'
   - include: tasks/mysql-accounts.yml
 
