@@ -1,0 +1,37 @@
+- name: mariadb-libs
+  yum:
+    name: mariadb-libs
+    state: removed
+- name: install Percona-XtraDB-Cluster-shared{{ mysql_package }}
+  yum:
+    name: Percona-XtraDB-Cluster-shared{{ mysql_package }},Percona-XtraDB-Cluster-shared-compat{{ mysql_package }}
+    update_cache: true
+    state: present
+  when: mysql_version == '5.7'
+- name: install Percona-XtraDB-Cluster{{ mysql_package }}
+  yum:
+    name: Percona-XtraDB-Cluster-server{{ mysql_package }},Percona-XtraDB-Cluster-client{{ mysql_package }}
+    update_cache: true
+    state: present
+- name: install extras
+  yum:
+    name: percona-xtrabackup{{ xtrabackup_package }},libev,percona-toolkit,nc,nmap,git,qpress
+    state: present
+- name: create my.cnf file
+  template:
+    src: my_template_pxc.cnf
+    dest: /etc/my.cnf
+    owner: mysql
+    group: mysql
+    mode: 0644
+- name: Percona Server daemon
+  service:
+    enabled: yes
+    state: started
+    name: mysql
+- name: root .my.cnf
+  template:
+    src: dot_my_root.cnf
+    dest: /root/.my.cnf
+    mode: 0600
+    force: no
