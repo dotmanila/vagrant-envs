@@ -7,7 +7,7 @@
   - include: tasks/linux-selinux.yml
   - name: install proxysql
     yum:
-      name: https://github.com/sysown/proxysql/releases/download/v1.3.4/proxysql-1.3.4-1-centos7.x86_64.rpm
+      name: https://github.com/sysown/proxysql/releases/download/v1.3.7/proxysql-1.3.7-1-centos7.x86_64.rpm
       state: present
   - name: install MySQL client
     yum: 
