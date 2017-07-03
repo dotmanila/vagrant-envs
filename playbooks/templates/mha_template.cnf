@@ -4,10 +4,10 @@
 
 [server default]
 
-user=mhauser
-password=MHApass2017_
-repl_user=mharepl
-repl_password=MHArepl2017_
+user=percona
+password=PERCona2017_
+repl_user=replica
+repl_password=PERCrepl2017_
 ssh_user=vagrant
 
 manager_workdir=/var/log/masterha/mhaprod

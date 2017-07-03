@@ -17,7 +17,7 @@
   - include: tasks/percona-server.yml
   - include: tasks/mysql-password-57.yml
     when: mysql_package == '-57'
-  - include: tasks/mysql-accounts-mha.yml
+  - include: tasks/mysql-accounts.yml
 
   - copy:
       src: ~/.vagrant.d/insecure_private_key

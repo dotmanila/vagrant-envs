@@ -8,7 +8,7 @@ LOAD MYSQL USERS TO RUNTIME;
 SAVE MYSQL SERVERS TO DISK;
 SAVE MYSQL USERS TO DISK;
 
-UPDATE main.global_variables SET variable_value='proxysql'
+UPDATE main.global_variables SET variable_value='monitor'
   WHERE variable_name=='mysql-monitor_username';
 UPDATE main.global_variables SET variable_value='PERCona2017_'
   WHERE variable_name=='mysql-monitor_password';
