@@ -14,6 +14,7 @@
   - include: tasks/repo-percona.yml
   - include: tasks/repo-epel.yml
   - include: tasks/repo-twindb.yml
+  - include: tasks/linux-selinux.yml
   - include: tasks/percona-server.yml
   - include: tasks/mysql-password-57.yml
     when: mysql_package == '-57'

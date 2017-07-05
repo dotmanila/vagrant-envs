@@ -1,0 +1,49 @@
+---
+- hosts: all
+  vars:
+    mysql_package: '-57'
+    xtrabackup_package: '-24'
+    # * for all hosts, or ansible_hostname 
+    # for specific hosts only
+    mysql_alter_57_password: '*'
+  tasks:
+  - set_fact:
+      mysql_package: '-56'
+      xtrabackup_package: ''
+    when: mysql_version == '5.6'
+  - set_fact:
+      mysql_gtid_mode: false
+    when: mysql_gtid_mode is not defined
+  - include: tasks/repo-percona.yml
+  - include: tasks/repo-epel.yml
+  - include: tasks/repo-twindb.yml
+  - include: tasks/linux-selinux.yml
+  - include: tasks/percona-server.yml
+  - include: tasks/mysql-password-57.yml
+    when: mysql_package == '-57'
+  - include: tasks/mysql-accounts.yml
+
+  # this is an ugly hack to prevent replication from breaking on the slaves
+  # because of password validation plugin being enabled on install on all nodes
+  # simpler instead of provisioning all slaves from master data :-)
+  - name: reset master to clean binary logs
+    shell: >
+      mysql -e 'reset master' && 
+      touch /home/vagrant/.ansible/.state_master_reset
+    args:
+      creates: /home/vagrant/.ansible/.state_master_reset
+
+  - name: configure GR nodes
+    template:
+      src: setup-gr-nodes.sql
+      dest: /home/vagrant/.ansible/setup-gr-nodes.sql
+      owner: vagrant
+      group: vagrant
+      mode: 0644
+
+  - name: configure GR nodes
+    shell: >
+      mysql < /home/vagrant/.ansible/setup-gr-nodes.sql && 
+      touch /home/vagrant/.ansible/.state_gr_installed
+    args:
+      creates: /home/vagrant/.ansible/.state_gr_installed
