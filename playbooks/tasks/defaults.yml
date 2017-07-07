@@ -1,0 +1,8 @@
+---
+- set_fact:
+    mysql_package: '-56'
+    xtrabackup_package: ''
+  when: mysql_version == '5.6'
+- set_fact:
+    mysql_gtid_mode: false
+  when: mysql_gtid_mode is not defined

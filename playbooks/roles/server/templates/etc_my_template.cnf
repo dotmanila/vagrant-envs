@@ -25,6 +25,6 @@ transaction_write_set_extraction=XXHASH64
 loose-group_replication_group_name="deadbeef-feed-bead-deaf-facefadedeed"
 loose-group_replication_start_on_boot=off
 loose-group_replication_local_address= "{{ ansible_eth1['ipv4']['address'] }}:24901"
-loose-group_replication_group_seeds= "{{ mysql_cluster_nodes }}"
+loose-group_replication_group_seeds= "{{ mysql_cluster_nodes|join(':24901,') ~ ':24901' }}"
 loose-group_replication_bootstrap_group= off
 {% endif %}

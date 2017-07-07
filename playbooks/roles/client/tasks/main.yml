@@ -1,0 +1,19 @@
+---
+- name: install MySQL client
+  yum: 
+    name: Percona-Server-client{{ mysql_package }}
+    update_cache: true
+    state: present
+
+- name: install extras
+  yum:
+    name: percona-toolkit,nc,nmap,git
+    state: present
+
+- name: /home/vagrant/.my.cnf mysql
+  template:
+    src: dot_my_percona.cnf
+    dest: /home/vagrant/.my.cnf
+    owner: vagrant
+    group: vagrant
+    mode: 0644

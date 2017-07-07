@@ -1,5 +1,5 @@
 STOP SLAVE;
-CHANGE MASTER TO MASTER_HOST='192.168.56.92', master_user='replica', 
+CHANGE MASTER TO MASTER_HOST='{{ mysql_master_ip }}', master_user='replica', 
 master_password='PERCrepl2017_', 
 {% if mysql_gtid_mode %}
 master_auto_position=1;

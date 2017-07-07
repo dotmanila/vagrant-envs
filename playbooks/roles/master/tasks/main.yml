@@ -1,0 +1,7 @@
+---
+- name: assign vip to master
+  shell: >
+    ip addr add {{ mysql_cluster_writer_vip }}/32 dev eth1 &&
+    touch /home/vagrant/.ansible/.state_vip_configured
+  args:
+    creates: /home/vagrant/.ansible/.state_vip_configured

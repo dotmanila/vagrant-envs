@@ -1,0 +1,16 @@
+---
+- name: install mha node packages
+  yum:
+    name: mha4mysql-node
+    state: present
+
+- name: chmod mysql datadir with g+w
+  file: 
+    path: /var/lib/mysql
+    state: directory
+    mode: 0775
+
+- name: add vagrant to mysql group
+  user: 
+    name: vagrant
+    groups: mysql

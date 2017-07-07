@@ -30,7 +30,7 @@ wsrep_cluster_name		= pxc
 {% if ansible_hostname == 'pxc01' %}
 wsrep_cluster_address		= "gcomm://"
 {% else %}
-wsrep_cluster_address           = "gcomm://{{ mysql_cluster_nodes }}"
+wsrep_cluster_address           = "gcomm://{{ mysql_cluster_nodes|join(',') }}"
 {% endif %}
 wsrep_slave_threads		= 2
 wsrep_sst_method		= xtrabackup-v2

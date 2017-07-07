@@ -1,4 +1,7 @@
 ---
-- include: proxysql.yml
 - include: pxc.yml
+
+- hosts: proxynodes
+  roles:
+  - proxysql
 

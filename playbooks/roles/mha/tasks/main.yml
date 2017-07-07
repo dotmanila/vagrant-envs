@@ -1,0 +1,30 @@
+---
+- name: create masterha directory
+  file:
+    path: /var/log/masterha/
+    owner: vagrant
+    group: vagrant
+    mode: 0755
+    state: directory
+
+- name: create masterha env directory
+  file:
+    path: /var/log/masterha/mhaprod/
+    owner: vagrant
+    group: vagrant
+    mode: 0755
+    state: directory
+
+- name: create masterha config directory
+  file:
+    path: /etc/masterha/
+    owner: vagrant
+    group: vagrant
+    mode: 0755
+    state: directory
+
+- include: manager.yml
+  when: mha_node_type is defined and mha_node_type == 'manager'
+
+- include: node.yml
+  when: mha_node_type is defined and mha_node_type == 'node'

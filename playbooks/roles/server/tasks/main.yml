@@ -1,0 +1,14 @@
+---
+- include: percona-server.yml
+- include: mysql-password-57.yml
+  when: mysql_package == '-57'
+- include: mysql-accounts.yml
+# this is an ugly hack to prevent replication from breaking on the slaves
+# because of password validation plugin being enabled on install on all nodes
+# simpler instead of provisioning all slaves from master data :-)
+- name: reset master to clean binary logs
+  shell: >
+    mysql -e 'reset master' && 
+    touch /home/vagrant/.ansible/.state_master_reset
+  args:
+    creates: /home/vagrant/.ansible/.state_master_reset

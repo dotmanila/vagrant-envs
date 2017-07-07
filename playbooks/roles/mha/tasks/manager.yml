@@ -1,0 +1,39 @@
+---
+- name: install mha manager packages
+  yum:
+    name: mha4mysql-manager,gcc,python-devel,openssl-devel,python-pip,perl-Net-Telnet
+    state: present
+
+- name: create mha-helper config directory
+  file:
+    path: /etc/mha-helper/
+    owner: vagrant
+    group: vagrant
+    mode: 0755
+    state: directory
+
+- name: create mha-helper conf file
+  template:
+    src: mha_helper.conf
+    dest: /etc/mha-helper/mhaprod.conf
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: create MHA cnf file
+  template: 
+    src: mha_template.cnf 
+    dest: /etc/masterha/mhaprod.cnf 
+    owner: vagrant 
+    group: vagrant 
+    mode: 0644
+
+- pip:
+    name: git+https://github.com/ovaistariq/mha-helper.git
+    editable: false
+
+- name: copy mha power_manager
+  copy:
+    src: power_manager
+    dest: /usr/bin/power_manager
+    mode: 0755

@@ -1,0 +1,41 @@
+---
+- set_fact:
+    proxysql_version: 'v1.3.8/proxysql-1.3.8-1-centos7.x86_64.rpm'
+- set_fact:
+    proxysql_version: 'v1.4.0/proxysql-1.4.0-1-centos7.x86_64.rpm'
+  when: mysql_cluster_type == 'grouprepl'
+
+- name: install proxysql
+  yum:
+    name: "https://github.com/sysown/proxysql/releases/download/{{ proxysql_version }}"
+    state: present
+
+- name: proxysql service
+  service:
+    enabled: yes
+    state: started
+    name: proxysql
+
+- name: upload proxysql grants
+  template:
+    src: setup-proxysql.sql
+    dest: /home/vagrant/.ansible/setup-proxysql.sql
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: /home/vagrant/.my.cnf proxysql
+  template:
+    src: dot_my_proxysql.cnf
+    dest: /home/vagrant/.my.cnf
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: initial proxysql configuration
+  shell: > 
+    mysql --defaults-file=/home/vagrant/.my.cnf < \
+      /home/vagrant/.ansible/setup-proxysql.sql && 
+    touch /home/vagrant/.ansible/.state_grants_installed
+  args:
+    creates: /home/vagrant/.ansible/.state_grants_installed

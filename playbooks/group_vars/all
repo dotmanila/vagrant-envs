@@ -1,0 +1,4 @@
+---
+mysql_package: '-57'
+xtrabackup_package: '-24'
+mysql_alter_57_password: '*'

@@ -6,7 +6,9 @@
     group: vagrant
     mode: 0600
 - name: update authorized_keys
-  shell: ssh-keygen -y -f id_rsa >> authorized_keys && touch /home/vagrant/.ansible/.state_authkeys_installed
+  shell: >
+    ssh-keygen -y -f id_rsa >> authorized_keys && 
+    touch /home/vagrant/.ansible/.state_authkeys_installed
   args:
     chdir: /home/vagrant/.ssh
     creates: /home/vagrant/.ansible/.state_authkeys_installed

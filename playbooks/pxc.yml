@@ -1,4 +1,10 @@
 ---
+- hosts: all
+  tasks:    
+  - include: tasks/repo-percona.yml
+  - include: tasks/repo-epel.yml
+  - include: tasks/linux-selinux.yml
+  
 - hosts: pxcnodes
   vars:
     mysql_package: '-57'
@@ -11,10 +17,6 @@
       mysql_package: '-56'
       xtrabackup_package: ''
     when: mysql_version == '5.6'
-  - include: tasks/repo-percona.yml
-  - include: tasks/repo-epel.yml
-  - include: tasks/linux-ssh.yml
-  - include: tasks/linux-selinux.yml
   - include: tasks/percona-cluster.yml
   - include: tasks/mysql-password-57.yml
     when: mysql_package == '-57'

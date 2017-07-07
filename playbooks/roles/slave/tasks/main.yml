@@ -1,0 +1,15 @@
+---
+  - name: upload slave setup sql
+    template:
+      src: setup-slave.sql
+      dest: /home/vagrant/.ansible/setup-slave.sql
+      owner: vagrant
+      group: vagrant
+      mode: 0644
+
+  - name: configure replication on slaves
+    shell: >
+      mysql < /home/vagrant/.ansible/setup-slave.sql && 
+      touch /home/vagrant/.ansible/.state_repl_installed
+    args:
+      creates: /home/vagrant/.ansible/.state_repl_installed

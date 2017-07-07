@@ -2,3 +2,4 @@
 **/*.retry
 Vagrantfile
 sftp-config.json
+.DS_Store

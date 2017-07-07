@@ -1,0 +1,15 @@
+---
+- name: configure GR nodes
+  template:
+    src: setup-gr-nodes.sql
+    dest: /home/vagrant/.ansible/setup-gr-nodes.sql
+    owner: vagrant
+    group: vagrant
+    mode: 0644
+
+- name: configure GR nodes
+  shell: >
+    mysql < /home/vagrant/.ansible/setup-gr-nodes.sql && 
+    touch /home/vagrant/.ansible/.state_gr_installed
+  args:
+    creates: /home/vagrant/.ansible/.state_gr_installed

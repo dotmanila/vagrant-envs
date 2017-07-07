@@ -1,0 +1,6 @@
+---
+- include: linux-selinux.yml
+- include: linux-ssh.yml
+- include: repo-epel.yml
+- include: repo-percona.yml
+- include: repo-twindb.yml

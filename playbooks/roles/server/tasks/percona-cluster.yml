@@ -1,3 +1,4 @@
+---
 - name: mariadb-libs
   yum:
     name: mariadb-libs
