@@ -17,8 +17,9 @@ MySQL accounts, almost always defaults to `percona`:`PERCona2017_` and should ha
 Please note, each MV is mostly 1G of RAM and 2 virtual CPUs.
 
 - pxc: 3 node Percona XtraDB cluster 5.7 on CentOS 7
-- proxysql-pxc: pxc environment behind ProxySQL 1.3.7
+- proxysql-pxc: pxc environment behind ProxySQL 1.3.8
 - mha: MySQL Master HA environment with dedicated MHA manager node, one master and 2 slaves, Percona Server 5.7, CentOS 7
+- grepl: Group Replication with ProxySQL 1.4.0 using native GR features
 
 Some `Vagrantfile` can also be modified for MySQL versions i.e. 5.6 vs 5.7, enabling/disabling GTID.
 
