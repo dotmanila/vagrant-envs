@@ -7,7 +7,7 @@
 
 - name: install extras
   yum:
-    name: percona-toolkit,nc,nmap,git
+    name: percona-toolkit,nc,nmap,git,sysbench
     state: present
 
 - name: /home/vagrant/.my.cnf mysql

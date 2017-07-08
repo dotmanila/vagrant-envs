@@ -1,4 +1,17 @@
 ---
+- name: download gr sys schema view
+  get_url:
+    url: https://gist.githubusercontent.com/lefred/77ddbde301c72535381ae7af9f968322/raw/5e40b03333a3c148b78aa348fd2cd5b5dbb36e4d/addition_to_sys.sql
+    dest: /home/vagrant/.ansible/addition_to_sys.sql
+
+- name: install sys schema view
+  shell: >
+    mysql < /home/vagrant/.ansible/addition_to_sys.sql && 
+    touch /home/vagrant/.ansible/.state_sys_installed
+  args:
+    creates: /home/vagrant/.ansible/.state_sys_installed
+  when: ansible_hostname == 'gr01'
+
 - name: configure GR nodes
   template:
     src: setup-gr-nodes.sql
