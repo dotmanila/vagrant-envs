@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
     ansible.playbook = "playbooks/mha.yml"
     ansible.sudo = true
     # Uncomment to configure nodes without MHA
-    ansible.skip_tags = 'mha'
+    #ansible.skip_tags = 'mha'
     ansible.groups = {
       "mhanodes" => ["master", "slave", "backup"],
       "mhaslaves" => ["slave", "backup"],

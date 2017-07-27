@@ -1,11 +1,18 @@
 ---
-- name: install MySQL client
+- set_fact:
+    mysql_server_package: 'Percona-XtraDB-Cluster'
+  when: mysql_cluster_type is defined and mysql_cluster_type == 'pxc'
+- name: remove conflicting mariadb-libs
+  yum:
+    name: mariadb-libs
+    state: removed
+- name: install client packages
   yum: 
-    name: Percona-Server-client{{ mysql_package }}
+    name: "{{ mysql_server_package }}-client{{ mysql_package }},{{ mysql_server_package }}-shared{{ mysql_package }},{{ mysql_server_package }}-shared-compat{{ mysql_package }}"
     update_cache: true
     state: present
 
-- name: install extras
+- name: install extra client packages
   yum:
     name: percona-toolkit,nc,nmap,git,sysbench
     state: present

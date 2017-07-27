@@ -1,14 +1,13 @@
 ---
-- name: mariadb-libs
+- set_fact:
+    mysql_server_package: 'Percona-XtraDB-Cluster'
+  when: mysql_cluster_type is defined and mysql_cluster_type == 'pxc'
+- name: install server packages
   yum:
-    name: mariadb-libs
-    state: removed
-- name: install Percona-Server{{ mysql_package }}
-  yum:
-    name: Percona-Server-server{{ mysql_package }},Percona-Server-shared{{ mysql_package }}
+    name: "{{ mysql_server_package }}-server{{ mysql_package }}"
     update_cache: true
     state: present
-- name: install extras
+- name: install extra server packages
   yum:
     name: percona-xtrabackup{{ xtrabackup_package }},libev,percona-toolkit,nc,nmap,git,qpress
     state: present
@@ -19,12 +18,12 @@
     owner: mysql
     group: mysql
     mode: 0644
-- name: Percona Server daemon
+- name: start mysql server process
   service:
     enabled: yes
     state: started
     name: mysql
-- name: root .my.cnf
+- name: /root/.my.cnf
   template:
     src: dot_my_root.cnf
     dest: /root/.my.cnf

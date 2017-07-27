@@ -3,6 +3,7 @@
 - include: mysql-password-57.yml
   when: mysql_package == '-57'
 - include: mysql-accounts.yml
+  when: ansible_hostname == mysql_alter_57_password or mysql_alter_57_password == '*'
 # this is an ugly hack to prevent replication from breaking on the slaves
 # because of password validation plugin being enabled on install on all nodes
 # simpler instead of provisioning all slaves from master data :-)
@@ -12,3 +13,4 @@
     touch /home/vagrant/.ansible/.state_master_reset
   args:
     creates: /home/vagrant/.ansible/.state_master_reset
+  when: mysql_cluster_type != 'pxc'
